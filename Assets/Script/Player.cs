@@ -7,10 +7,18 @@ public class Player : MonoBehaviour
 
     CharacterController characterController;
     public int speed = 4;
+    public float attackSpeed = 1f;
     public float rotationSpeed = 3;
-    public int Hp = 10;
+    public int hp = 10;
+    bool isStop = false;
 
+    public GameObject[] Weapons;
+    public Transform ShutPostion;
+    public GameObject Bullet;
+    bool isGun = false;
+    bool isShut = false;
     bool walk = false;
+    public bool isAttacking = false;
 
     Animator animator;
 
@@ -19,14 +27,22 @@ public class Player : MonoBehaviour
     {
         characterController = this.GetComponent<CharacterController>();
         animator = this.GetComponent<Animator>();
+        //Weapons[1].SetActive(true);
+        //Weapons[0].SetActive(false);
+        //isGun = true;
+
     }
 
     // Update is called once per frame
     void Update()
     {
-        Walk();
-        Rotation();
-        Attack();
+        if (!isStop)
+        {
+            Walk();
+            Rotation();
+            Attack();
+            animator.SetFloat("AttackSpeed", attackSpeed);
+        }
     }
 
     void Walk()
@@ -79,9 +95,45 @@ public class Player : MonoBehaviour
 
     void Attack()
     {
-        if(Input.GetKey(KeyCode.Mouse0))
+        if(!isGun)
         {
-            animator.SetTrigger("Attack");
+            if (Input.GetKey(KeyCode.Mouse0))
+            {
+                isAttacking = true;
+                animator.SetTrigger("Attack");
+                Invoke("WaitAttack", 0.5f / attackSpeed);
+            }
+        } else
+        {
+            if(!isShut && Input.GetKey(KeyCode.Mouse0))
+            {
+                isShut = true;
+                animator.SetTrigger("GunAttack");
+                Instantiate(Bullet, ShutPostion.position, this.transform.rotation);
+                Invoke("GunWait", 0.5f / attackSpeed);
+            }
+        }
+    }
+
+    void GunWait()
+    {
+        isShut = false;
+    }
+
+    void WaitAttack()
+    {
+        isAttacking = false;
+    }
+
+    public void SetHp(int damage)
+    {
+        hp -= damage;
+        if (hp <= 0)
+        {
+            hp = 0;
+            isStop = true;
+            animator.SetTrigger("Death");
+            Debug.Log("플레이어가 사망하였습니다.");
         }
     }
 }
