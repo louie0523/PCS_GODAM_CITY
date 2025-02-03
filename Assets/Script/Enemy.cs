@@ -13,6 +13,9 @@ public class Enemy : MonoBehaviour
 
     public float NavDisTance = 15f;
     public bool isAttacking = false;
+    public GameObject item;
+
+    public GameManager gameManager;
 
 
     private void Awake()
@@ -20,6 +23,7 @@ public class Enemy : MonoBehaviour
         navMeshAgent = this.GetComponent<NavMeshAgent>();
         animator = this.GetComponent<Animator>();
         Player = GameObject.Find("Player").transform;
+        gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
     }
 
     void Update()
@@ -75,6 +79,8 @@ public class Enemy : MonoBehaviour
                 isStop = true;
                 Debug.Log("적이 사망하였습니다.");
                 navMeshAgent.isStopped = true;
+                Instantiate(item, this.transform.position, this.transform.rotation);
+                gameManager.EnemyCount++;
             }
         }
     }

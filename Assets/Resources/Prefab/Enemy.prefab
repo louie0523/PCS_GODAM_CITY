@@ -76,6 +76,7 @@ MonoBehaviour:
   isStop: 0
   NavDisTance: 15
   isAttacking: 0
+  item: {fileID: 1875902866109848635, guid: 2ab675cbf92285548951668744366737, type: 3}
 --- !u!95 &8489228634001864109
 Animator:
   serializedVersion: 5

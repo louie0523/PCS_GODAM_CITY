@@ -1,12 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class Player : MonoBehaviour
 {
 
     CharacterController characterController;
-    public int speed = 4;
+    public float speed = 4;
     public float attackSpeed = 1f;
     public float rotationSpeed = 3;
     public int hp = 10;
@@ -20,6 +21,8 @@ public class Player : MonoBehaviour
     bool walk = false;
     public bool isAttacking = false;
 
+    public float[] currentTime;
+    public TextMeshProUGUI[] StatusText;
     Animator animator;
 
     // Start is called before the first frame update
@@ -27,9 +30,6 @@ public class Player : MonoBehaviour
     {
         characterController = this.GetComponent<CharacterController>();
         animator = this.GetComponent<Animator>();
-        //Weapons[1].SetActive(true);
-        //Weapons[0].SetActive(false);
-        //isGun = true;
 
     }
 
@@ -43,6 +43,9 @@ public class Player : MonoBehaviour
             Attack();
             animator.SetFloat("AttackSpeed", attackSpeed);
         }
+        StatusText[0].text = "HP : " + hp;
+        StatusText[1].text = "Speed : " + speed;
+        StatusText[2].text = "Attack Speed : " + attackSpeed * 100 + "%";
     }
 
     void Walk()
@@ -134,6 +137,68 @@ public class Player : MonoBehaviour
             isStop = true;
             animator.SetTrigger("Death");
             Debug.Log("플레이어가 사망하였습니다.");
+        }
+    }
+
+    public void GetGun()
+    {
+        Debug.Log("무기가 총으로 업그레이드 됩니다.");
+        Weapons[1].SetActive(true);
+        Weapons[0].SetActive(false);
+        isGun = true;
+    }
+
+    IEnumerator TimeSpeed()
+    {
+        while (currentTime[0] > 0)
+        {
+            currentTime[0] -= 1f;
+            yield return new WaitForSeconds(1f);
+            if(currentTime[0] == 0)
+            {
+                speed -= 4;
+            }
+        }
+    }
+
+    IEnumerator TimeAttackSpeed()
+    {
+        while (currentTime[1] > 0)
+        {
+            currentTime[1] -= 1f;
+            yield return new WaitForSeconds(1f);
+            if (currentTime[1] == 0)
+            {
+                attackSpeed--;
+            }
+        }
+    }
+
+
+
+    public void SpeedUp(float Up)
+    {
+        Debug.Log("스피드 업 포션을 획득했습니다.");
+        speed += Up;
+        currentTime[0] += 5f;
+        StartCoroutine("TimeSpeed");
+    }
+
+    public void AttackSpeeddUp(float Up)
+    {
+        Debug.Log("공격 속도 포션을 획득했습니다.");
+        attackSpeed += Up;
+        currentTime[1] += 10f;
+        StartCoroutine("TimeAttackSpeed");
+    }
+
+    public void HpUp(int Up)
+    {
+        hp += Up;
+        Debug.Log("체력 포션을 획득했습니다.");
+        if(hp > 10)
+        {
+            hp = 10;
         }
     }
 }

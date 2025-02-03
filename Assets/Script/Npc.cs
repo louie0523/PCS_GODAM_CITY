@@ -6,10 +6,13 @@ public class Npc : MonoBehaviour
 {
     Animator animator;
     bool isAlive = true;
+    public GameManager gameManager;
+
 
     private void Start()
     {
         animator = this.GetComponent<Animator>();
+        gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
     }
 
     private void OnTriggerEnter(Collider other)
@@ -18,6 +21,7 @@ public class Npc : MonoBehaviour
         {
             animator.SetTrigger("Death");
             isAlive = false;
+            gameManager.NpcCount++;
             Invoke("Destroy", 10f);
         }
     }
